@@ -1,5 +1,5 @@
 spring:
   data:
     mongodb:
-      uri : mongodb+srv://shubhankarsharma22:GnL4NOuidV10nngn@cluster0.fpzey.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0s
+      uri : ${db_url}
       database : urls
