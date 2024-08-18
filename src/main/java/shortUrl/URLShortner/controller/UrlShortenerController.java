@@ -1,12 +1,13 @@
 package shortUrl.URLShortner.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shortUrl.URLShortner.model.Url;
 import shortUrl.URLShortner.service.UrlShortenerService;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -27,9 +28,22 @@ public class UrlShortenerController {
     }
 
     @GetMapping("/{shortId}")
-    public ResponseEntity<String> getOriginalUrl(@PathVariable String shortId) {
+    public ResponseEntity<Void> getOriginalUrl(@PathVariable String shortId) {
         Optional<Url> url = urlShortenerService.getOriginalUrl(shortId);
-        return url.map(value -> ResponseEntity.ok(value.getOriginalUrl()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (url.isPresent()) {
+            String originalUrl = url.get().getOriginalUrl();
+
+            // Ensure the original URL has the correct protocol
+            if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
+                originalUrl = "https://" + originalUrl;
+            }
+
+            // Redirect to the original URL
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(originalUrl))
+                    .build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -28,7 +28,7 @@ public class BloomFilter <T>{
         }
     }
 
-    public boolean mightContained(T item){
+    public boolean mightContain(T item){
         for(Function<T,Integer> hashFunction:hashFunctions){
             int hash = Math.abs(hashFunction.apply(item)%bitArraySize);
             if(!bitSet.get(hash)){
